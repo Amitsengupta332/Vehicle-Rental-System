@@ -3,6 +3,7 @@ export enum UserRole {
   Customer = "customer",
 }
 
+
 export interface User {
   id: number;
   name: string;

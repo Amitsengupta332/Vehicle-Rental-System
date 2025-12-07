@@ -1,64 +1,58 @@
-import type { NextFunction, Request, Response } from "express";
-
-import jwt, { type JwtPayload } from "jsonwebtoken";
+import { NextFunction, Request, Response } from "express";
+import jwt from "jsonwebtoken";
 import config from "../config";
 import { pool } from "../config/db";
-import { UserRole } from "../types/roles";
 
-const auth = (...roles: UserRole[]) => {
+const auth = (...roles: string[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const authToken = req.header("authorization");
+      const authHeader = req.headers.authorization;
 
-      if (!authToken) {
+      // 1️⃣ Token missing
+      if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return res.status(401).json({
           success: false,
-          message: "No token provided.",
+          message: "Unauthorized: Token missing",
         });
       }
 
-      const token = authToken.split(" ")[1] as string;
+      // 2️⃣ Extract the token
+      const token = authHeader.split(" ")[1];
 
-      const decoded = jwt.verify(
-        token,
-        config.jwtSecret as string
-      ) as JwtPayload;
+      // 3️⃣ Decode the token
+      const decoded: any = jwt.verify(token as string, config.jwtSecret as string);
 
-      if (!decoded) {
-        return res.status(401).json({
-          success: false,
-          message: "Invalid token.",
-        });
-      }
-
+      // 4️⃣ Check if user actually exists in DB
       const userResult = await pool.query(
-        `SELECT id, name, email, phone, role FROM users WHERE email=$1`,
+        "SELECT id, name, email, phone, role FROM users WHERE email=$1",
         [decoded.email]
       );
 
       if (userResult.rows.length === 0) {
         return res.status(401).json({
           success: false,
-          message: "User no longer exists.",
+          message: "Unauthorized: User no longer exists",
         });
       }
 
       const user = userResult.rows[0];
 
-      if (roles.length > 0 && !roles.includes(user.role)) {
+      // 5️⃣ Check role
+      if (roles.length && !roles.includes(user.role)) {
         return res.status(403).json({
           success: false,
-          message: "Unauthorized. You are not allowed to access this resource.",
+          message: "Forbidden: You are not allowed",
         });
       }
 
+      // 6️⃣ Attach verified user to request
       req.user = user;
 
-      return next();
-    } catch (error: any) {
-      res.status(500).json({
+      next();
+    } catch (err: any) {
+      return res.status(401).json({
         success: false,
-        message: error.message,
+        message: "Invalid or expired token",
       });
     }
   };
