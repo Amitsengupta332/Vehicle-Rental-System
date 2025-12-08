@@ -3,6 +3,7 @@ import config from "./config";
 import initDB from "./config/db";
 import { authRoutes } from "./modules/auth/auth.routes";
 import { userRoutes } from "./modules/users/user.routes";
+import { vehiclesRoute } from "./modules/vehicles/vehicles.route";
 
 const app = express();
 // parser
@@ -18,8 +19,8 @@ app.get("/", (req: Request, res: Response) => {
 });
 //user crud
 app.use("/api/v1/users", userRoutes);
-// // vehicle crud
-// app.use("/api/v1/vehicles",vehiclesRoutes);
+// vehicle crud
+app.use("/api/v1/vehicles",vehiclesRoute);
 // //booking crud
 // app.use("/api/v1/bookings", bookingRoutes);
 //auth route
