@@ -32,8 +32,16 @@ const createVehicles = async (payload: any) => {
   return result.rows[0];
 };
 
-const getVehicles = async () => {};
-const getSingleVehicles = async () => {};
+const getVehicles = async () => {
+  const result = await pool.query(`SELECT * FROM vehicles`);
+  return result.rows;
+};
+
+const getSingleVehicles = async (id: number) => {
+  const result = await pool.query(`SELECT * FROM vehicles WHERE id=$1`, [id]);
+  return result.rows[0];
+};
+
 const updateVehicles = async () => {};
 const deleteVehicles = async () => {};
 
