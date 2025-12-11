@@ -84,17 +84,17 @@ src/
 
 
 
-⚙️ Run Locally
+## 🚀 How to Run Locally
 1️⃣ Install dependencies
 npm install
 
-2️⃣ Create .env file
+##  Create .env file
 CONNECTION_STR=your_postgres_connection_string
 JWT_SECRET=your_jwt_secret_here
 
-3️⃣ Start development server
+##  Start development server
 npm run dev
 
-4️⃣ Production build
+## Production build
 npm run build
 npm start
