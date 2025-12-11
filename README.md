@@ -81,6 +81,8 @@ src/
 ├── types/
 │   └── roles.ts
 └── utils/
+`````
+
 
 
 
@@ -88,7 +90,7 @@ src/
 1️⃣ Install dependencies
 npm install
 
-##  Create .env file
+## Create .env file
 CONNECTION_STR=your_postgres_connection_string
 JWT_SECRET=your_jwt_secret_here
 
